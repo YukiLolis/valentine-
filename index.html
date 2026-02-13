@@ -122,7 +122,9 @@ canvas {
 </iframe>    
 
 <body>
-
+<audio id="bgmusic" loop>
+    <source src="youtube.mp3" type="audio/mpeg">
+</audio>
 <div id="loginBox">
     💌 Nhập mật khẩu:
     <input type="password" id="password" onkeypress="handleKey(event)">
@@ -362,12 +364,15 @@ function render() {
 
 render();
 }
-
-
+window.addEventListener("click", function () {
+    const music = document.getElementById("bgmusic");
+    music.play();
+}, { once: true });
 </script>
 
 </body>
 </html>
+
 
 
 
