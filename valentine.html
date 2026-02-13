@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Love</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    color: red;
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* LOGIN */
+#loginBox {
+    margin-top: 150px;
+    font-size: 60px;
+}
+
+input {
+    font-size: 40px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid red;
+    color: red;
+    text-align: center;
+    width: 250px;
+    outline: none;
+}
+
+#hints {
+    margin-top: 40px;
+    font-size: 35px;
+}
+
+/* TIM BAY */
+.heart {
+    position: fixed;
+    bottom: -20px;
+    color: red;
+    animation: floatUp linear infinite;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+/* ẢNH */
+#imageContainer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: black;
+    cursor: pointer;
+    z-index: 1;
+}
+
+/* HEART SCREEN */
+#heartScreen {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    top: 0;
+    left: 0;
+    z-index: 5;
+}
+
+.box {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.center-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    color: rgb(225, 12, 168);
+    font-size: 45px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#pinkboard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginBox">
+    💌 Nhập mật khẩu:
+    <input type="password" id="password" onkeypress="handleKey(event)">
+</div>
+
+<div id="hints"></div>
+<div id="imageContainer" onclick="nextImage()"></div>
+
+<div id="heartScreen">
+    <div class="box">
+        <canvas id="pinkboard"></canvas>
+    </div>
+    <div class="center-text">I Love You 💖</div>
+</div>
+<canvas id="pinkboard"></canvas>
+<script>
+let correctPassword = "1";
+let attempts = 0;
+let currentImage = 0;
+
+let images = [
+    "images.jpg",
+    "image2.jpg",
+    "image3.jpg"
+];
+
+function handleKey(e) {
+    if (e.key === "Enter") checkPassword();
+}
+
+function checkPassword() {
+    let input = document.getElementById("password").value;
+    let hints = document.getElementById("hints");
+
+    if (input === correctPassword) {
+        document.getElementById("loginBox").style.display = "none";
+        hints.style.display = "none";
+        let container = document.getElementById("imageContainer");
+        container.style.display = "block";
+        container.style.backgroundImage = `url('${images[currentImage]}')`;
+    } else {
+        attempts++;
+        if (attempts === 1)
+            hints.innerHTML += "<div>Gợi ý 1: Mật khẩu là 1 chữ số 💌</div>";
+        else if (attempts === 2)
+            hints.innerHTML += "<div>Gợi ý 2: Có thể là 1 ngày nào đó 🌹</div>";
+        else if (attempts === 3)
+            hints.innerHTML += "<div>Gợi ý 3: Mình quen nhau từ hôm nào zay taaa 💖</div>";
+    }
+    document.getElementById("password").value = "";
+}
+
+function nextImage() {
+    currentImage++;
+    if (currentImage < images.length) {
+        document.getElementById("imageContainer").style.backgroundImage =
+            `url('${images[currentImage]}')`;
+    } else {
+        document.getElementById("imageContainer").style.display = "none";
+        document.getElementById("heartScreen").style.display = "block";
+        startHeart();
+    }
+}
+
+/* TIM BAY NHẸ */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+setInterval(createHeart, 400);
+
+/* HEART PARTICLE EFFECT */
+function startHeart() {
+
+var settings = {
+    particles: {
+        length: 2000,
+        duration: 2,
+        velocity: 100,
+        effect: -1.3,
+        size: 13,
+    }
+};
+
+var Point = function(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+};
+
+Point.prototype.clone = function() {
+    return new Point(this.x, this.y);
+};
+
+Point.prototype.length = function(length) {
+    if (length === undefined)
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    this.normalize();
+    this.x *= length;
+    this.y *= length;
+    return this;
+};
+
+Point.prototype.normalize = function() {
+    var length = this.length();
+    this.x /= length;
+    this.y /= length;
+    return this;
+};
+
+var Particle = function() {
+    this.position = new Point();
+    this.velocity = new Point();
+    this.acceleration = new Point();
+    this.age = 0;
+};
+
+Particle.prototype.initialize = function(x, y, dx, dy) {
+    this.position.x = x;
+    this.position.y = y;
+    this.velocity.x = dx;
+    this.velocity.y = dy;
+    this.acceleration.x = dx * settings.particles.effect;
+    this.acceleration.y = dy * settings.particles.effect;
+    this.age = 0;
+};
+
+Particle.prototype.update = function(deltaTime) {
+    this.position.x += this.velocity.x * deltaTime;
+    this.position.y += this.velocity.y * deltaTime;
+    this.velocity.x += this.acceleration.x * deltaTime;
+    this.velocity.y += this.acceleration.y * deltaTime;
+    this.age += deltaTime;
+};
+
+Particle.prototype.draw = function(context, image) {
+    function ease(t) {
+        return (--t) * t * t + 1;
+    }
+
+    var size = image.width * ease(this.age / settings.particles.duration);
+    context.globalAlpha = 1 - this.age / settings.particles.duration;
+    context.drawImage(
+        image,
+        this.position.x - size / 2,
+        this.position.y - size / 2,
+        size,
+        size
+    );
+};
+
+var canvas = document.getElementById("pinkboard");
+var context = canvas.getContext("2d");
+
+/* FULL SCREEN RESIZE */
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+/* HEART SHAPE */
+function pointOnHeart(t) {
+    return new Point(
+        160 * Math.pow(Math.sin(t), 3),
+        130 * Math.cos(t)
+        - 50 * Math.cos(2 * t)
+        - 20 * Math.cos(3 * t)
+        - 10 * Math.cos(4 * t)
+        + 25
+    );
+}
+
+/* PARTICLE IMAGE */
+var image = (function() {
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    canvas.width = settings.particles.size;
+    canvas.height = settings.particles.size;
+
+    context.fillStyle = "#FF5CA4";
+    context.beginPath();
+    context.arc(
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width / 2,
+        0,
+        2 * Math.PI
+    );
+    context.fill();
+
+    var image = new Image();
+    image.src = canvas.toDataURL();
+    return image;
+})();
+
+/* PARTICLE ARRAY */
+var particles = [];
+for (var i = 0; i < settings.particles.length; i++) {
+    particles.push(new Particle());
+}
+
+/* RENDER LOOP */
+function render() {
+    requestAnimationFrame(render);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
+
+    for (var i = 0; i < 12; i++) {
+        var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+        var dir = pos.clone().length(settings.particles.velocity);
+        var particle = particles[Math.floor(Math.random() * particles.length)];
+
+        particle.initialize(
+            centerX + pos.x,
+            centerY - pos.y,
+            dir.x,
+            -dir.y
+        );
+    }
+
+    particles.forEach(function(particle) {
+        if (particle.age < settings.particles.duration) {
+            particle.update(0.016);
+            particle.draw(context, image);
+        }
+    });
+}
+
+render();
+}
+
+
+</script>
+
+</body>
+</html>
+
+
+
+
